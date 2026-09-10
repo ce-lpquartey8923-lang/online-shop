@@ -1,0 +1,9 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+
+export default function AccountPage() {
+  const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
+  return <div className="mx-auto max-w-md px-5 py-20"><div className="text-center"><p className="text-xs font-semibold uppercase tracking-[.2em] text-coral">Welcome to luma</p><h1 className="mt-4 font-display text-5xl">{mode === "sign-in" ? "Welcome back." : "Create your account."}</h1><p className="mt-4 text-sm text-ink/60">Save your favorites and keep your orders in one place.</p></div><form className="mt-10 space-y-5" onSubmit={(event) => event.preventDefault()}><input required type="email" placeholder="Email address" className="w-full border-b border-ink/20 bg-transparent py-3 text-sm outline-none focus:border-moss" /><input required type="password" placeholder="Password" className="w-full border-b border-ink/20 bg-transparent py-3 text-sm outline-none focus:border-moss" />{mode === "sign-up" && <input required type="password" placeholder="Confirm password" className="w-full border-b border-ink/20 bg-transparent py-3 text-sm outline-none focus:border-moss" />}<button className="mt-3 w-full bg-ink py-4 text-sm font-semibold text-white">{mode === "sign-in" ? "Sign in" : "Create account"}</button></form><p className="mt-7 text-center text-xs text-ink/60">{mode === "sign-in" ? "New to Luma?" : "Already have an account?"} <button onClick={() => setMode(mode === "sign-in" ? "sign-up" : "sign-in")} className="font-semibold text-moss underline underline-offset-4">{mode === "sign-in" ? "Create an account" : "Sign in"}</button></p><p className="mt-12 text-center text-[11px] leading-5 text-ink/40">Authentication is scaffolded for Supabase Auth. Add your project keys to enable real sessions.</p><Link href="/shop" className="mt-8 block text-center text-xs underline underline-offset-4">Continue shopping</Link></div>;
+}
