@@ -22,4 +22,15 @@ This app connects to your existing Supabase project; it does not clone, create, 
 
 The project must expose the `products` and `categories` tables used by the catalog query. The included `supabase/migrations/001_store.sql` is reference/setup SQL only; run it only if your existing database still needs those tables, policies, seed records, or the auth profile trigger. Never put the service-role key in `.env.local` or client-side code.
 
+The catalog seed contains these eight products: Mori stoneware mug, Oat linen throw, Arc serving board, Dune bud vase, Everyday linen napkins, Pebble beeswax candle, Still life print, and Cedar measuring scoop. If your existing `products` table already has the same `slug` values, the seed is safe to rerun because it uses `on conflict (slug) do nothing`.
+
+To connect an existing Supabase project:
+
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-key
+```
+
+Then open the Supabase SQL Editor and run `supabase/migrations/001_store.sql` only when you need the included schema, RLS policies, auth profile trigger, or full eight-product catalog seed. If your database schema already exists, copy only the product `insert ... select` statement from that file instead of rerunning the table definitions.
+
 Demo mode uses stable Unsplash URLs and local state for the cart and account flow only when Supabase environment variables are absent. When configured, products and categories are loaded from Supabase; connection errors are shown with a retry action rather than silently masking a production problem. No payment is processed by the demo checkout.
