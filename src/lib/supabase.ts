@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Product } from '../data'
+import type { Product } from '../types'
 export const isSupabaseConfigured = Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
 export type Database = {
   public: {
@@ -16,10 +16,17 @@ export type Database = {
     }
   }
 }
-export const supabase = isSupabaseConfigured ? createClient<Database>(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY) : null
+export const supabase = isSupabaseConfigured
+  ? createClient<Database>(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
+  : null
 
 export async function fetchProducts(): Promise<{ data: Product[] | null; error: Error | null }> {
-  if (!supabase) return { data: null, error: null }
+  if (!supabase) {
+    return {
+      data: null,
+      error: new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.'),
+    }
+  }
   const [productResult, categoryResult] = await Promise.all([
     supabase.from('products').select('*').order('created_at', { ascending: false }),
     supabase.from('categories').select('id, name'),

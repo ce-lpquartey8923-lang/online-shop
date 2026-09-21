@@ -1,13 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Link, Route, Routes, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Check, ChevronDown, Menu, Minus, Plus, Search, ShoppingBag, SlidersHorizontal, Sparkles, User, X } from 'lucide-react'
-import { products, type Category, type Product } from './data'
-import { fetchProducts, isSupabaseConfigured } from './lib/supabase'
+import type { Category, Product } from './types'
+import { fetchProducts } from './lib/supabase'
 
 type CartLine = { product: Product; quantity: number }
 const money = (n:number) => `$${n.toFixed(2)}`
 type CatalogState = { products: Product[]; loading: boolean; error: Error | null }
-const CatalogContext = createContext<CatalogState>({ products, loading: false, error: null })
+const CatalogContext = createContext<CatalogState>({ products: [], loading: true, error: null })
 const useCatalog = () => useContext(CatalogContext)
 
 function Header({count,onCart}:{count:number;onCart:()=>void}) {
@@ -44,12 +44,11 @@ function InfoPage({kind}:{kind:'about'|'shipping'|'faq'}){const content={about:{
 function App() {
   const [lines, setLines] = useState<CartLine[]>([])
   const [cartOpen, setCartOpen] = useState(false)
-  const [catalog, setCatalog] = useState<Product[]>(products)
-  const [loading, setLoading] = useState(isSupabaseConfigured)
+  const [catalog, setCatalog] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
   const loadCatalog = useCallback(() => {
-    if (!isSupabaseConfigured) return
     setLoading(true)
     setError(null)
     fetchProducts()

@@ -1,6 +1,6 @@
 # Loam & Linen
 
-A polished Vite + React + TypeScript storefront for considered home objects. The app is fully usable in demo mode without credentials and switches to Supabase data access when `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are present.
+A polished Vite + React + TypeScript storefront for considered home objects. The app requires Supabase credentials and loads its catalog from your connected project.
 
 ## Run locally
 
@@ -35,4 +35,4 @@ Then open the Supabase SQL Editor and run `supabase/migrations/001_store.sql` on
 
 If the products are missing from an existing database, run `supabase/seed.sql` in the SQL Editor instead. It creates only missing `public.categories` and `public.products` tables, updates matching slugs, inserts missing products, and finishes with a verification query. It does not delete or replace existing rows. If your existing tables use different column names or incompatible types, Supabase will identify the column that needs to be mapped or adjusted.
 
-Demo mode uses stable Unsplash URLs and local state for the cart and account flow only when Supabase environment variables are absent. When configured, products and categories are loaded from Supabase; connection errors are shown with a retry action rather than silently masking a production problem. No payment is processed by the demo checkout.
+Products and categories are loaded from Supabase; connection errors are shown with a retry action rather than silently masking a production problem. The cart remains client-side until a payment/order backend is connected.
