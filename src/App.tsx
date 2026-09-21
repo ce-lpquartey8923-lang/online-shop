@@ -41,5 +41,63 @@ function Account(){const [mode,setMode]=useState<'signin'|'signup'>('signin');co
 
 function InfoPage({kind}:{kind:'about'|'shipping'|'faq'}){const content={about:{title:<>Made for <em>living.</em></>,body:'Loam & Linen is a small edit of useful, beautiful things. We work with makers who care about material, process, and making things that last.'},shipping:{title:<>Arrive with <em>ease.</em></>,body:'Orders ship within 2–4 business days. Complimentary shipping is included on orders over $100. If something is not right, returns are welcome within 30 days.'},faq:{title:<>A few good <em>answers.</em></>,body:'Have a question about an object, an order, or our process? Write to hello@loamandlinen.com and we will get back to you within two business days.'}}[kind];return <main className="intro info-page"><p className="eyebrow">{kind==='about'?'Our approach':kind==='shipping'?'Shipping & returns':'Frequently asked'}</p><h1>{content.title}</h1><p>{content.body}</p><Link className="button button-dark" to="/shop">Explore the collection <ArrowRight size={16}/></Link></main>}
 
-function App(){const [lines,setLines]=useState<CartLine[]>([]);const [cartOpen,setCartOpen]=useState(false);const [catalog,setCatalog]=useState<Product[]>(products);const [loading,setLoading]=useState(isSupabaseConfigured);const [error,setError]=useState<Error|null>(null);const loadCatalog=useCallback(()=>{if(!isSupabaseConfigured)return;setLoading(true);setError(null);fetchProducts().then(result=>{if(result.error)setError(result.error);else if(result.data)setCatalog(result.data)}).catch(reason=>setError(reason instanceof Error?reason:new Error('Unable to load products.'))).finally(()=>setLoading(false))},[]);useEffect(loadCatalog,[loadCatalog]);const add=(product:Product)=>{setLines(ls=>{const existing=ls.find(l=>l.product.id===product.id);return existing?ls.map(l=>l.product.id===product.id?{...l,quantity:l.quantity+1}:l):[...ls,{product,quantity:1}]});setCartOpen(true)};const update=(id:string,n:number)=>setLines(ls=>n<1?ls.filter(l=>l.product.id!==id):ls.map(l=>l.product.id===id?{...l,quantity:n}:l));const count=lines.reduce((s,l)=>s+l.quantity,0);const catalogState={products:catalog,loading,error};return <CatalogContext.Provider value={catalogState}><Header count={count} onCart={()=>setCartOpen(true)}/>{loading?<main className="empty" aria-live="polite"><Sparkles size={26}/><h3>Gathering the collection…</h3><p>Just a moment.</p></main>:error?<main className="empty" role="alert"><h3>We could not load the collection.</h3><p>{error.message}</p><button className="button button-outline" onClick={loadCatalog}>Try again</button></main>:<Routes><Route path="/" element={<Home onAdd={add}/>}/><Route path="/shop" element={<Shop onAdd={add}/>}/><Route path="/product/:id" element={<ProductDetail onAdd={add}/>}/><Route path="/checkout" element={<Checkout lines={lines}/>}/><Route path="/account" element={<Account/>}/><Route path="/about" element={<InfoPage kind="about"/>}/><Route path="/shipping" element={<InfoPage kind="shipping"/>}/><Route path="/faq" element={<InfoPage kind="faq"/>}/><Route path="*" element={<Home onAdd={add}/>} /></Routes>}{cartOpen&&<Cart lines={lines} onClose={()=>setCartOpen(false)} onUpdate={update} onCheckout={()=>{setCartOpen(false);window.location.href='/checkout'}}/>}</CatalogContext.Provider>}
+function App() {
+  const [lines, setLines] = useState<CartLine[]>([])
+  const [cartOpen, setCartOpen] = useState(false)
+  const [catalog, setCatalog] = useState<Product[]>(products)
+  const [loading, setLoading] = useState(isSupabaseConfigured)
+  const [error, setError] = useState<Error | null>(null)
+
+  const loadCatalog = useCallback(() => {
+    if (!isSupabaseConfigured) return
+    setLoading(true)
+    setError(null)
+    fetchProducts()
+      .then(result => {
+        if (result.error) setError(result.error)
+        else if (result.data) setCatalog(result.data)
+      })
+      .catch(reason => setError(reason instanceof Error ? reason : new Error('Unable to load products.')))
+      .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(loadCatalog, [loadCatalog])
+
+  const add = (product: Product) => {
+    setLines(current => {
+      const existing = current.find(line => line.product.id === product.id)
+      return existing
+        ? current.map(line => line.product.id === product.id ? { ...line, quantity: line.quantity + 1 } : line)
+        : [...current, { product, quantity: 1 }]
+    })
+    setCartOpen(true)
+  }
+
+  const update = (id: string, quantity: number) => {
+    setLines(current => quantity < 1
+      ? current.filter(line => line.product.id !== id)
+      : current.map(line => line.product.id === id ? { ...line, quantity } : line))
+  }
+
+  const count = lines.reduce((sum, line) => sum + line.quantity, 0)
+  const catalogState = { products: catalog, loading, error }
+
+  return <CatalogContext.Provider value={catalogState}>
+    <Header count={count} onCart={() => setCartOpen(true)} />
+    {loading ? <main className="empty" aria-live="polite"><Sparkles size={26} /><h3>Gathering the collection...</h3><p>Just a moment.</p></main>
+      : error ? <main className="empty" role="alert"><h3>We could not load the collection.</h3><p>{error.message}</p><button className="button button-outline" onClick={loadCatalog}>Try again</button></main>
+      : <Routes>
+        <Route path="/" element={<Home onAdd={add} />} />
+        <Route path="/shop" element={<Shop onAdd={add} />} />
+        <Route path="/product/:id" element={<ProductDetail onAdd={add} />} />
+        <Route path="/checkout" element={<Checkout lines={lines} />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/about" element={<InfoPage kind="about" />} />
+        <Route path="/shipping" element={<InfoPage kind="shipping" />} />
+        <Route path="/faq" element={<InfoPage kind="faq" />} />
+        <Route path="*" element={<Home onAdd={add} />} />
+      </Routes>}
+    {cartOpen && <Cart lines={lines} onClose={() => setCartOpen(false)} onUpdate={update} onCheckout={() => { setCartOpen(false); window.location.href = '/checkout' }} />}
+  </CatalogContext.Provider>
+}
 export default App
