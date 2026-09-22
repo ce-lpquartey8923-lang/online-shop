@@ -8,11 +8,11 @@ export type Database = {
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
     Tables: {
-      products: { Row: { id:string; slug:string; name:string; category_id:string|null; price:number; description:string; image_url:string; details:string[]; badge:string|null; created_at:string }; Insert: Omit<Database['public']['Tables']['products']['Row'],'id'|'created_at'> & { id?:string; created_at?:string }; Update: Partial<Database['public']['Tables']['products']['Insert']> }
-      categories: { Row: { id:string; name:string; slug:string }; Insert: { id?:string; name:string; slug:string }; Update: Partial<Database['public']['Tables']['categories']['Insert']> }
-      profiles: { Row: { id:string; full_name:string|null; email:string|null; created_at:string }; Insert: { id:string; full_name?:string|null; email?:string|null }; Update: Partial<Database['public']['Tables']['profiles']['Insert']> }
-      orders: { Row: { id:string; user_id:string|null; status:string; total:number; shipping_address:Record<string,string>|null; created_at:string }; Insert: Omit<Database['public']['Tables']['orders']['Row'],'id'|'created_at'> & { id?:string; created_at?:string }; Update: Partial<Database['public']['Tables']['orders']['Insert']> }
-      order_items: { Row: { id:string; order_id:string; product_id:string|null; quantity:number; unit_price:number }; Insert: Omit<Database['public']['Tables']['order_items']['Row'],'id'> & { id?:string }; Update: Partial<Database['public']['Tables']['order_items']['Insert']> }
+      products: { Row: { id:string; slug:string; name:string; category_id:string|null; price:number; description:string; image_url:string; details:string[]; badge:string|null; created_at:string }; Insert: Omit<Database['public']['Tables']['products']['Row'],'id'|'created_at'> & { id?:string; created_at?:string }; Update: Partial<Database['public']['Tables']['products']['Insert']>; Relationships: [] }
+      categories: { Row: { id:string; name:string; slug:string }; Insert: { id?:string; name:string; slug:string }; Update: Partial<Database['public']['Tables']['categories']['Insert']>; Relationships: [] }
+      profiles: { Row: { id:string; full_name:string|null; email:string|null; created_at:string }; Insert: { id:string; full_name?:string|null; email?:string|null }; Update: Partial<Database['public']['Tables']['profiles']['Insert']>; Relationships: [] }
+      orders: { Row: { id:string; user_id:string|null; status:string; total:number; shipping_address:Record<string,string>|null; created_at:string }; Insert: Omit<Database['public']['Tables']['orders']['Row'],'id'|'created_at'> & { id?:string; created_at?:string }; Update: Partial<Database['public']['Tables']['orders']['Insert']>; Relationships: [] }
+      order_items: { Row: { id:string; order_id:string; product_id:string|null; quantity:number; unit_price:number }; Insert: Omit<Database['public']['Tables']['order_items']['Row'],'id'> & { id?:string }; Update: Partial<Database['public']['Tables']['order_items']['Insert']>; Relationships: [] }
     }
   }
 }
