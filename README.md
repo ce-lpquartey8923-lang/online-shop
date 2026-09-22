@@ -15,10 +15,19 @@ Other scripts: `npm run build`, `npm run typecheck`, `npm run lint`, and `npm ru
 
 This app connects to your existing Supabase project; it does not clone, create, or replace your database.
 
-1. Copy `.env.example` to `.env.local`.
+1. Copy `.env.example` to `.env.local` in the same folder as `package.json`.
 2. Set `VITE_SUPABASE_URL` to your existing project URL.
-3. Set `VITE_SUPABASE_ANON_KEY` to your existing project's public anon key.
-4. Start the app with `npm run dev`.
+3. Set `VITE_SUPABASE_ANON_KEY` to your existing project's public anon or publishable key.
+4. Stop any running Vite process and start it again with `npm run dev`.
+
+Example `.env.local`:
+
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-or-publishable-key
+```
+
+Do not include quotes, leave either value blank, or use the `service_role` key. Vite reads `.env.local` only when the dev server starts. If the app still shows a configuration error, verify that the file is named exactly `.env.local` (not `.env.local.txt`) and that it is beside `package.json`.
 
 The project must expose the `products` and `categories` tables used by the catalog query. The included `supabase/migrations/001_store.sql` is reference/setup SQL only; run it only if your existing database still needs those tables, policies, seed records, or the auth profile trigger. Never put the service-role key in `.env.local` or client-side code.
 

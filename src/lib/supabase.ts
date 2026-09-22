@@ -1,6 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Product } from '../types'
-export const isSupabaseConfigured = Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() ?? ''
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() ?? ''
+const hasValidUrl = /^https:\/\/[a-z0-9-]+\.supabase\.co(?:\/.*)?$/i.test(supabaseUrl)
+
+export const supabaseConfigError = !supabaseUrl || !supabaseAnonKey
+  ? 'Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to a .env.local file beside package.json, then restart npm run dev.'
+  : !hasValidUrl
+    ? 'VITE_SUPABASE_URL must be your Supabase Project URL, for example https://your-project-id.supabase.co.'
+    : null
+export const isSupabaseConfigured = supabaseConfigError === null
 export type Database = {
   public: {
     Views: Record<string, never>
@@ -17,14 +27,14 @@ export type Database = {
   }
 }
 export const supabase = isSupabaseConfigured
-  ? createClient<Database>(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
+  ? createClient<Database>(supabaseUrl, supabaseAnonKey)
   : null
 
 export async function fetchProducts(): Promise<{ data: Product[] | null; error: Error | null }> {
   if (!supabase) {
     return {
       data: null,
-      error: new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local.'),
+      error: new Error(supabaseConfigError ?? 'Supabase is not configured.'),
     }
   }
   const [productResult, categoryResult] = await Promise.all([
